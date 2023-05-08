@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Treehouse Full Stack JavaScript Project 10 | Full Stack App with React and a REST API">
+    <meta name="description"
+        content="Treehouse Full Stack JavaScript Project 10 | Full Stack App with React and a REST API">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <title>Courses</title>
@@ -31,19 +32,24 @@
         <main>
             <div class="form--centered">
                 <h2>Sign In</h2>
-                
+
                 <form>
                     <label for="emailAddress">Email Address</label>
                     <input id="emailAddress" name="emailAddress" type="email" value="">
                     <label for="password">Password</label>
                     <input id="password" name="password" type="password" value="">
-                    <button class="button" type="submit">Sign In</button><button class="button button-secondary" onclick="event.preventDefault(); location.href='index.html';">Cancel</button>
+                    <button class="button signinBtn" type="submit">Sign In</button><button
+                        class="button button-secondary"
+                        onclick="event.preventDefault(); location.href='index.html';">Cancel</button>
                 </form>
                 <p>Don't have a user account? Click here to <a href="sign-up.html">sign up</a>!</p>
-                
+
             </div>
         </main>
     </div>
+
+    <script src="api.js"></script>
+    <script src="functions.js"></script>
 </body>
 
 </html>
