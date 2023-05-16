@@ -52,3 +52,21 @@ async function deleteEnrolmentById(id) {
 
   return data.json();
 }
+
+async function addEnrolment(enrolment) {
+  let data = await api(`/api/v1/enrolments/add`, "POST", enrolment);
+
+  return data.json();
+}
+
+async function addStudent(student) {
+  let data = await api("/api/v1/students/add", "POST", student);
+
+  return data.json();
+}
+
+async function registerStudent(student) {
+  let data = await api("/api/v1/students/register", "POST", student);
+
+  return data.json();
+}
