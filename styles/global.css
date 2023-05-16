@@ -255,3 +255,7 @@ textarea:focus {
 .header--logout {
   cursor: pointer;
 }
+
+.signUp {
+  cursor: pointer;
+}

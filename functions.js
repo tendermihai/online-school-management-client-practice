@@ -23,7 +23,7 @@ async function signIn() {
           <button class="button signinBtn" >Sign In</button>
           <button class="button button-secondary">Cancel</button>
       </section>
-      <p>Don't have a user account? Click here to <a href="sign-up.html">sign up</a>!</p>
+      <p>Don't have a user account? Click here to <a class="signUp">sign up</a>!</p>
 
   </div>
 </main>
@@ -45,6 +45,12 @@ async function signIn() {
     } catch (err) {
       alert("Credentiale incorecte");
     }
+  });
+
+  let register = document.querySelector(".signUp");
+
+  register.addEventListener("click", () => {
+    signUp();
   });
 }
 
@@ -68,22 +74,13 @@ async function firstPage(user) {
 <main>
   <div class="wrap main--grid">
       
-      <a class="course--module course--add--module">
-          <span class="course--add--title">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 13 13"
-                  class="add">
-                  <polygon points="7,6 7,0 6,0 6,6 0,6 0,7 6,7 6,13 7,13 7,7 13,7 13,6 "></polygon>
-              </svg>
-              New Course
-          </span>
-      </a>
+      
   </div>
 </main>
     `;
 
   let data = await findEnrolmentByStudent(user.id);
   attachCards(data);
-
   let logOut = document.querySelector(".header--logout");
 
   logOut.addEventListener("click", () => {
@@ -92,18 +89,111 @@ async function firstPage(user) {
 
   console.log(user);
 
-  let unsubscribe = document.querySelector(".unsubBtn");
+  let unsubscribeButtons = document.querySelectorAll(".unsubBtn");
 
-  if (unsubscribe) {
-    unsubscribe.addEventListener("click", async () => {
-      console.log("enrolemnt", unsubscribe.id);
+  unsubscribeButtons.forEach((unsubscribe) => {
+    if (unsubscribe) {
+      unsubscribe.addEventListener("click", async () => {
+        await deleteEnrolmentById(unsubscribe.id).then((response) => {
+          firstPage(user);
+        });
+      });
+    }
+  });
 
-      await deleteEnrolmentById(unsubscribe.id);
-      unsubscribe.classList.remove("unsubBtn");
-      unsubscribe.classList.add("subBtn");
-      unsubscribe.textContent = "Subscribe";
+  let subscribeButtons = document.querySelectorAll(".subBtn");
+  subscribeButtons.forEach((subscribe) => {
+    subscribe.addEventListener("click", async () => {
+      console.log(subscribe.id);
+      console.log("am apasat subscribe");
+
+      let enrolment = {
+        courseId: subscribe.id,
+        studentId: user.id,
+        createdAt: getFormattedDate(Date.now()),
+        id: guidGenerator(),
+      };
+
+      await addEnrolment(enrolment).then(() => {
+        firstPage(user);
+      });
     });
-  }
+  });
+}
+
+async function signUp() {
+  let container = document.querySelector("#root");
+
+  container.innerHTML = `
+  <header>
+  <div class="wrap header--flex">
+      <h1 class="header--logo">Courses</h1>
+      <nav>
+          <ul class="header--signedout">
+              
+          </ul>
+      </nav>
+  </div>
+</header>
+<main>
+  <div class="form--centered">
+      <h2>Sign In</h2>
+
+      <section>
+          <label for="firstName">First Name:</label>
+          <input id="firstName" name="firstName" type="text">
+          <label for="lastName">Last Name:</label>
+          <input id="lastName" name="lastName" type="text">
+          <label for="emailAddress">Email Address</label>
+          <input id="emailAddress" name="emailAddress" type="email" value="">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" value="">
+          <label for="age">Age:</label>
+          <input id="age" name="age" type="number" value="">
+
+          <button class="button signupBtn" >Sign Up</button>
+          <button class="button button-secondary cancelButton">Cancel</button>
+      </section>
+      
+
+  </div>
+</main>
+  `;
+
+  let signupBtn = document.querySelector(".signupBtn");
+
+  signupBtn.addEventListener("click", async () => {
+    let firstName = document.querySelector("#firstName").value;
+    let lastName = document.querySelector("#lastName").value;
+    let email = document.querySelector("#emailAddress").value;
+    let password = document.querySelector("#password").value;
+    let age = document.querySelector("#age").value;
+    console.log(firstName, lastName, email, password, age);
+
+    await registerStudent({ firstName, lastName, email, password, age }).value;
+    signIn();
+  });
+
+  let cancel = document.querySelector(".cancelButton");
+
+  cancel.addEventListener("click", () => {
+    signIn();
+  });
+}
+
+function guidGenerator() {
+  const S4 = function () {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+  return S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4();
+}
+
+function getFormattedDate(date) {
+  const parsedDate = new Date(date);
+  const year = parsedDate.getFullYear();
+  const month = ("0" + (parsedDate.getMonth() + 1)).slice(-2);
+  const day = ("0" + parsedDate.getDate()).slice(-2);
+  return `${day}-${month}-${year}`;
 }
 
 function createCard(course) {
@@ -128,7 +218,7 @@ function createCard(course) {
     <h3 class="course--title">${course.name}</h3>
     <h3 class="course--title">${course.department}</h3>
     <div class="btns">
-    <button class="subBtn button">Subscribe</button>
+    <button class="subBtn button" id="${course.id}">Subscribe</button>
     </div>
 `;
   }
