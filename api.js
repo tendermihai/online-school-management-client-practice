@@ -70,3 +70,9 @@ async function registerStudent(student) {
 
   return data.json();
 }
+
+async function getBooks() {
+  let data = await api("/api/v1/books/all", "GET", null);
+
+  return data.json();
+}
