@@ -61,6 +61,7 @@ async function firstPage(user) {
   <header>
   <div class="wrap header--flex">
       <h1 class="header--logo">Courses</h1>
+      <h1 class="header--logo books">Books</h1>
       <nav>
           <ul class="header--signedout">
               
@@ -118,6 +119,12 @@ async function firstPage(user) {
         firstPage(user);
       });
     });
+  });
+
+  let bookBtn = document.querySelector(".books");
+
+  bookBtn.addEventListener("click", async () => {
+    booksPage();
   });
 }
 
@@ -194,6 +201,57 @@ function getFormattedDate(date) {
   const month = ("0" + (parsedDate.getMonth() + 1)).slice(-2);
   const day = ("0" + parsedDate.getDate()).slice(-2);
   return `${day}-${month}-${year}`;
+}
+
+async function booksPage() {
+  container = document.querySelector("#root");
+
+  container.innerHTML = `
+  <header>
+  <div class="wrap header--flex">
+      <h1 class="header--logo">Courses</h1>
+      <h1 class="header--logo books">Books</h1>
+      <nav>
+          <ul class="header--signedout"></ul>
+      </nav>
+      <h1 class="header--logout">Log out</h1>
+  </div>
+</header>
+<main>
+  <div class="wrap main--grid"></div>
+</main>
+`;
+  let data = await getBooks();
+  attachBookCard(data);
+}
+
+function createBookCard(book) {
+  let card = document.createElement("a");
+
+  card.classList.add("course--module");
+  card.classList.add("course--link");
+
+  card.innerHTML = `
+  
+  <h2 class="course--label">Book ${book.id}</h2>
+    <h3 class="course--title">${book.studentId}</h3>
+    <h3 class="course--title">${book.bookName}</h3>
+    <h3 class="course--title">${book.createdAt}</h3>
+    <div class="btns">
+    <button class="unsubBtn button">Book</button>
+    </div>
+  
+  `;
+
+  return card;
+}
+
+function attachBookCard(books) {
+  let container = document.querySelector(".main--grid");
+
+  books.forEach((book) => {
+    container.prepend(createBookCard(book));
+  });
 }
 
 function createCard(course) {
