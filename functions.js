@@ -124,7 +124,7 @@ async function firstPage(user) {
   let bookBtn = document.querySelector(".books");
 
   bookBtn.addEventListener("click", async () => {
-    booksPage();
+    booksPage(user);
   });
 }
 
@@ -203,26 +203,204 @@ function getFormattedDate(date) {
   return `${day}-${month}-${year}`;
 }
 
-async function booksPage() {
+async function booksPage(user) {
   container = document.querySelector("#root");
 
   container.innerHTML = `
   <header>
   <div class="wrap header--flex">
-      <h1 class="header--logo">Courses</h1>
-      <h1 class="header--logo books">Books</h1>
+      <h1 class="header--logo courses">Courses</h1>
+      <h1 class="header--logo ">Books</h1>
       <nav>
-          <ul class="header--signedout"></ul>
+          <ul class="header--signedout">
+          <li>Hello, ${user.firstName}</a></li>
+          </ul>
+          <h1 class="header--logout">Log out</h1>
       </nav>
-      <h1 class="header--logout">Log out</h1>
+      
   </div>
-</header>
-<main>
-  <div class="wrap main--grid"></div>
-</main>
-`;
-  let data = await getBooks();
+ </header>
+ <main>
+  <div class="wrap main--grid">
+  <a class="course--module course--add--module addBtnBook">
+                    <span class="course--add--title">
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 13 13"
+                            class="add">
+                            <polygon points="7,6 7,0 6,0 6,6 0,6 0,7 6,7 6,13 7,13 7,7 13,7 13,6 "></polygon>
+                        </svg>
+                        New Book
+                    </span>
+                </a>
+                </div> 
+ </main>
+ `;
+
+  let data = await getBookByStudentId(user.id);
   attachBookCard(data);
+
+  let deleteButtons = document.querySelectorAll(".delBook");
+
+  deleteButtons.forEach((deleteButton) => {
+    if (deleteButton) {
+      deleteButton.addEventListener("click", async () => {
+        console.log(deleteButton.id);
+        await deleteBooks(deleteButton.id);
+        deleteButton.parentNode.parentNode.remove();
+      });
+    }
+  });
+
+  let updateButtons = document.querySelectorAll(".updBook");
+
+  updateButtons.forEach((updateButton) => {
+    if (updateButton) {
+      updateButton.addEventListener("click", () => {
+        updateBookPage(user, updateButton.id);
+      });
+    }
+  });
+
+  let coursesBtn = document.querySelector(".courses");
+  coursesBtn.addEventListener("click", () => {
+    firstPage(user);
+  });
+
+  let logOut = document.querySelector(".header--logout");
+
+  logOut.addEventListener("click", () => {
+    signIn();
+  });
+
+  let addBtn = document.querySelector(".addBtnBook");
+
+  addBtn.addEventListener("click", () => {
+    createBookPage(user);
+  });
+}
+
+async function createBookPage(user) {
+  let container = document.querySelector("#root");
+  container.innerHTML = `
+  <header>
+            <div class="wrap header--flex">
+                <h1 class="header--logo">Books</h1>
+                <nav>
+                    <ul class="header--signedin">
+                        <li>Welcome, ${user.firstName}!</li>
+                        <li class="logOut">Log Out</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <div class="wrap">
+                <h2>Create Book</h2>
+                <div class="validation--errors">
+                    <h3>Validation Errors</h3>
+                    <ul>
+                        <li>Please provide a value for "Title"</li>
+                      
+                    </ul>
+                </div>
+                <section>
+                    <div class="main--flex">
+                        <div>
+                            <label for="courseTitle">Book Title</label>
+                            <input id="courseTitle" name="courseTitle" type="text" value="">
+
+                        </div>
+                        <div>
+                            <label for="estimatedTime">Estimated Time</label>
+                            <input id="estimatedTime" name="estimatedTime" type="date" value="">
+
+                            
+                        </div>
+                    </div>
+                    <button class="button addNewBook">Create Book</button><button class="button button-secondary cancelBook">Cancel</button>
+                </section>
+            </div>
+        </main>
+  `;
+
+  let addNewBook = document.querySelector(".addNewBook");
+
+  addNewBook.addEventListener("click", async () => {
+    const studentId = user.id;
+    console.log(studentId);
+    const bookName = document.getElementById("courseTitle").value;
+    const createdAt = document.getElementById("estimatedTime").value;
+
+    await addBook({ studentId, bookName, createdAt });
+    booksPage(user);
+  });
+
+  let cancelBook = document.querySelector(".cancelBook");
+
+  cancelBook.addEventListener("click", () => {
+    booksPage(user);
+  });
+
+  let logOutBtn = document.querySelector(".logOut");
+
+  logOutBtn.addEventListener("click", () => {
+    signIn();
+  });
+}
+
+async function updateBookPage(user, id) {
+  let container = document.querySelector("#root");
+
+  container.innerHTML = `
+  <header>
+            <div class="wrap header--flex">
+                <h1 class="header--logo">Books</h1>
+                <nav>
+                    <ul class="header--signedin">
+                        <li>Welcome, ${user.firstName}!</li>
+                        <li>Log Out</li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <div class="wrap">
+                <h2>Update Book</h2>
+                <section>
+                    <div class="main--flex">
+                        <div>
+                            <label for="bookTitle">Book Title</label>
+                            <input id="bookTitle" name="bookTitle" type="text" value="">
+                        </div>
+                        <div>
+                            <label for="estimatedTime">Estimated Time</label>
+                            <input id="estimatedTime" name="estimatedTime" type="date" value="14 hours">
+
+                        </div>
+                    </div>
+                    <button class="button updateBook">Update Book</button><button class="button button-secondary cancelUpdateBook">Cancel</button>
+                </section>
+            </div>
+        </main>
+  `;
+
+  let updateBook = document.querySelector(".updateBook");
+
+  updateBook.addEventListener("click", async () => {
+    let bookName = document.getElementById("bookTitle").value;
+    let createdAt = document.getElementById("estimatedTime").value;
+    await updateBooks({
+      bookName,
+      createdAt,
+      id,
+    });
+    booksPage(user);
+  });
+
+  let cancelUpdateBtn = document.querySelector(".cancelUpdateBook");
+
+  cancelUpdateBtn.addEventListener("click", () => {
+    booksPage(user);
+  });
 }
 
 function createBookCard(book) {
@@ -238,7 +416,8 @@ function createBookCard(book) {
     <h3 class="course--title">${book.bookName}</h3>
     <h3 class="course--title">${book.createdAt}</h3>
     <div class="btns">
-    <button class="unsubBtn button">Book</button>
+    <button class="unsubBtn button updBook" id="${book.id}">Update</button>
+    <button class="unsubBtn button delBook" id="${book.id}">Delete</button>
     </div>
   
   `;
@@ -286,9 +465,22 @@ function createCard(course) {
 
 function attachCards(courses) {
   let container = document.querySelector(".main--grid");
-  // container.innerHTML = "";
+  container.innerHTML = "";
 
   courses.forEach((course) => {
     container.prepend(createCard(course));
   });
+}
+
+async function findBook() {
+  let data = await getBooks();
+  let foundBook;
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].id === id) {
+      foundBook = data[i];
+    }
+  }
+
+  return foundBook;
 }
