@@ -76,3 +76,30 @@ async function getBooks() {
 
   return data.json();
 }
+
+async function deleteBooks(id) {
+  let data = await api(`/api/v1/books/delete/id/${id}`, "DELETE");
+  return data.json();
+}
+
+async function updateBooks(book) {
+  let data = {
+    book,
+  };
+
+  let bookResponse = await api("/api/v1/books/update", "PUT", data);
+
+  return bookResponse.json();
+}
+
+async function getBookByStudentId(studentId) {
+  let data = await api(`/api/v1/books/find/${studentId}`, "GET", null);
+
+  return data.json();
+}
+
+async function addBook(book) {
+  let data = await api("/api/v1/books/add", "POST", book);
+
+  return data.json();
+}

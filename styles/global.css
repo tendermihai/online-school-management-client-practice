@@ -67,7 +67,7 @@ header nav a:hover {
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   width: 400px;
-  height: 250px;
+  height: 270px;
   display: block;
 }
 .course--label {
@@ -261,5 +261,20 @@ textarea:focus {
 }
 
 .books {
+  cursor: pointer;
+}
+
+.courses {
+  cursor: pointer;
+}
+
+/*  */
+/* 
+.header--signedout {
+  display: flex !important;
+  flex-direction: row !important;
+} */
+
+.logOut {
   cursor: pointer;
 }
